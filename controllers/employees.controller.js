@@ -48,13 +48,16 @@ exports.postItem = async (req, res) => {
 exports.putItem = async (req, res) => {
   const { firstName, lastName, department } = req.body;
   try {
-    const employee = await Employee.findById(req.params.id);
+    const employee = await Employee.updateOne(
+      { _id: req.params.id},
+      { $set: { firstName: firstName, lastName: lastName, department: department}}
+    );
     if (employee) {
-      await Employee.updateOne(
-        {_id: req.params.id},
-        { $set: {firstName, lastName, department} }
-      );
-      res.json({ message: 'OK' });
+        employee.firstName = firstName;
+        employee.lastName = lastName;
+        employee.department = department;
+        await employee.save();
+        res.json ({message: 'OK' });
     } else res.status(404).json({ message: 'Not found...'});
   } catch (err) {
     res.status(500).json({ message: err});
@@ -63,7 +66,11 @@ exports.putItem = async (req, res) => {
 
 exports.deleteItem =  async (req, res) => {
   try {
-    res.json(await Employee.findById(req.params.id));
+    const dep = await Employee.findById(req.params.id);
+    if (dep) {
+      await Employee.remove({ _id: req.params.id });
+      res.json({ message: 'OK' });
+    } else res.status(404).json({ message: 'Not Found ...' });
   } catch (err) {
     res.status(500).json({ message: err });
   }
