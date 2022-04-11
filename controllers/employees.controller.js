@@ -48,16 +48,13 @@ exports.postItem = async (req, res) => {
 exports.putItem = async (req, res) => {
   const { firstName, lastName, department } = req.body;
   try {
-    const employee = await Employee.updateOne(
-      { _id: req.params.id},
-      { $set: { firstName: firstName, lastName: lastName, department: department}}
-    );
+    const employee = await Employee.findById(req.params.id);
     if (employee) {
-        employee.firstName = firstName;
-        employee.lastName = lastName;
-        employee.department = department;
-        await employee.save();
-        res.json ({message: 'OK' });
+      await Employee.updateOne(
+        {_id: req.params.id},
+        { $set: {firstName, lastName, department} }
+      );
+      res.json({ message: 'OK' });
     } else res.status(404).json({ message: 'Not found...'});
   } catch (err) {
     res.status(500).json({ message: err});
