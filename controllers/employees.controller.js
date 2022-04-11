@@ -46,34 +46,24 @@ exports.postItem = async (req, res) => {
 };
 
 exports.putItem = async (req, res) => {
+  const { firstName, lastName, department } = req.body;
   try {
-    const { firstName, lastName, department } = req.body;
-    const dep = await Employee.findById(req.params.id).populate('department');
-    if (dep) {
+    const employee = await Employee.findById(req.params.id);
+    if (employee) {
       await Employee.updateOne(
-        { _id: req.params.id },
-        {
-          $set: {
-            firstName: firstName,
-            lastName: lastName,
-            department: department,
-          },
-        }
-      ).populate('department');
+        {_id: req.params.id},
+        { $set: {firstName, lastName, department} }
+      );
       res.json({ message: 'OK' });
-    } else res.status(404).json({ message: 'Not found...' });
+    } else res.status(404).json({ message: 'Not found...'});
   } catch (err) {
-    res.status(500).json({ message: err });
+    res.status(500).json({ message: err});
   }
 };
 
 exports.deleteItem =  async (req, res) => {
   try {
-    const dep = await Employee.findById(req.params.id);
-    if (dep) {
-      await Employee.remove(dep);
-      res.json({ message: 'OK' });
-    } else res.status(404).json({ message: 'Not Found ...' });
+    res.json(await Employee.findById(req.params.id));
   } catch (err) {
     res.status(500).json({ message: err });
   }
