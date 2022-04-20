@@ -38,7 +38,7 @@ describe('Department', () => {
   });
 
   describe('Creating data', () => {
-    it('TEST_12 - should inster new document with "insertOne" method', async () => {
+    it('TEST_12 - should insert new document with "insertOne" method', async () => {
       const department = new Department({ name: 'Department #1' });
       await department.save();
       expect(department.isNew).to.be.false;
